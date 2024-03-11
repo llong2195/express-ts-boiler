@@ -29,7 +29,7 @@
         var hls = new Hls({
           debug: true,
         });
-        hls.loadSource('http://127.0.0.1:5000/video/prog_index');
+        hls.loadSource('http://127.0.0.1:5000/streaming/prog_index');
         hls.attachMedia(video);
         hls.on(Hls.Events.MEDIA_ATTACHED, function () {
           video.muted = true;
@@ -37,7 +37,7 @@
         });
       }
       else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = 'http://127.0.0.1:5000/video/prog_index';
+        video.src = 'http://127.0.0.1:5000/streaming/prog_index';
         video.addEventListener('canplay', function () {
           video.play();
         });
