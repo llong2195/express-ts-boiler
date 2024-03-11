@@ -52,10 +52,15 @@ async function main() {
 
   app.use(cors());
 
-  app.get('/convert:filename', (req: Request, res: Response, next: NextFunction) => {
+  app.get("/", function (req, res) {
+    res.sendFile(__dirname + "/index.html");
+  });
+  
+
+  app.get("/convert:filename", (req: Request, res: Response, next: NextFunction) => {
     try {
       var filename = req.params.filename;
-      var filePath = path.join(__dirname, '../videos/' + filename);
+      var filePath = path.join(__dirname, "../videos/v1" + filename);
       if (!filePath) {
         return res.status(404).send('File not found!!');
       }
@@ -65,10 +70,10 @@ async function main() {
     }
   });
 
-  app.get('/streaming/:filename', (req: Request, res: Response, next: NextFunction) => {
+  app.get("/streaming/:filename", (req: Request, res: Response, next: NextFunction) => {
     try {
       const fileName = req.params.filename;
-      const filePath = path.join(__dirname, '../videos/v1' + fileName);
+      const filePath = path.join(__dirname, "../videos/v1" + fileName);
       console.log({ filePath });
       if (!filePath) {
         return res.status(404).send('file not found');
