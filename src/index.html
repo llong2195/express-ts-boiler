@@ -14,7 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/0.5.14/hls.min.js" integrity="sha512-js37JxjD6gtmJ3N2Qzl9vQm4wcmTilFffk0nTSKzgr3p6aitg73LR205203wTzCCC/NZYO2TAxSa0Lr2VMLQvQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
     document.getElementById("apiButton").addEventListener("click", function() {
-    fetch('http://127.0.0.1:3333/convert/video4')
+    fetch('http://127.0.0.1:5000/convert/video4')
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -29,7 +29,7 @@
         var hls = new Hls({
           debug: true,
         });
-        hls.loadSource('http://127.0.0.1:3333/video/prog_index');
+        hls.loadSource('http://127.0.0.1:5000/video/prog_index');
         hls.attachMedia(video);
         hls.on(Hls.Events.MEDIA_ATTACHED, function () {
           video.muted = true;
@@ -37,7 +37,7 @@
         });
       }
       else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = 'http://127.0.0.1:3333/video/prog_index';
+        video.src = 'http://127.0.0.1:5000/video/prog_index';
         video.addEventListener('canplay', function () {
           video.play();
         });
