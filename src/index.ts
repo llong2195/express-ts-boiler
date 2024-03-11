@@ -1,12 +1,12 @@
 import cors from 'cors';
 import { config } from 'dotenv';
 import express, { NextFunction, Request, Response } from 'express';
+import * as fs from 'fs';
 import morgan from 'morgan';
+import path, { join } from 'path';
 import HttpError from './common/http.error';
 import UserRouter from './modules/auth/auth.router';
-import path from 'path';
 import { encodeHLSWithMultipleVideoStreams } from './service/service';
-import { fs } from 'zx/.';
 
 config();
 const PORT = process.env.PORT || 5000;
@@ -20,30 +20,6 @@ async function main() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
 
-  app.get('/', (req: Request, res: Response) => {
-    return res.json('ok');
-  });
-
-  app.use('/api/user', UserRouter);
-  // app.use("/api/file", FileRouter);
-  // app.use("/api/auth", AuthRouter);
-
-  // catch 404 err
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    const err = new HttpError('Not Found!');
-    err.status = 404;
-    next(err);
-  });
-
-  // Exception Filter
-  app.use((err: { status: number; message: any }, req: Request, res: Response, next: NextFunction) => {
-    const status = err.status || 500;
-    return res.status(status).send({
-      data: null,
-      message: err.message || 'Something went wrong',
-    });
-  });
-
   app.use(
     express.static(staticFilesPath, {
       extensions: ['m3u8', 'ts'],
@@ -52,15 +28,21 @@ async function main() {
 
   app.use(cors());
 
-  app.get("/", function (req, res) {
-    res.sendFile(__dirname + "/index.html");
-  });
-  
+  app.use('/api/user', UserRouter);
+  // app.use("/api/file", FileRouter);
+  // app.use("/api/auth", AuthRouter);
 
-  app.get("/convert:filename", (req: Request, res: Response, next: NextFunction) => {
+  app.get('/', (req: Request, res: Response) => {
+    console.log('!!!!!!!!!!!!!!!!!');
+    console.log(join(process.cwd(), '/index.html'));
+
+    return res.sendFile(join(process.cwd(), '/index.html'));
+  });
+
+  app.get('/convert:filename', (req: Request, res: Response) => {
     try {
-      var filename = req.params.filename;
-      var filePath = path.join(__dirname, "../videos/v1" + filename);
+      const filename = req.params.filename;
+      const filePath = path.join(__dirname, '../videos/v1' + filename);
       if (!filePath) {
         return res.status(404).send('File not found!!');
       }
@@ -70,10 +52,10 @@ async function main() {
     }
   });
 
-  app.get("/streaming/:filename", (req: Request, res: Response, next: NextFunction) => {
+  app.get('/streaming/:filename', (req: Request, res: Response) => {
     try {
       const fileName = req.params.filename;
-      const filePath = path.join(__dirname, "../videos/v1" + fileName);
+      const filePath = path.join(__dirname, '../videos/v1' + fileName);
       console.log({ filePath });
       if (!filePath) {
         return res.status(404).send('file not found');
@@ -110,6 +92,22 @@ async function main() {
     } catch (error) {
       throw new Error(error);
     }
+  });
+
+  // catch 404 err
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const err = new HttpError('Not Found!');
+    err.status = 404;
+    next(err);
+  });
+
+  // Exception Filter
+  app.use((err: { status: number; message: any }, req: Request, res: Response) => {
+    const status = err.status || 500;
+    return res.status(status).send({
+      data: null,
+      message: err.message || 'Something went wrong',
+    });
   });
 
   app.listen(PORT, () => {
